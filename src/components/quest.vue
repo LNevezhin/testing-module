@@ -120,7 +120,9 @@
       if (sessionStorage.getItem("activeCard") != null) {
         this.activeCard = sessionStorage.getItem("activeCard");
       }
-      if (this.apidata && this.apidata.length != 0) this.newCard();
+      if (this.apidata && this.apidata.length != 0) {
+        this.newCard();
+      }
     },
 
     computed: {
@@ -137,6 +139,7 @@
         this.indexInputLetters.length = 0;
         this.inputStatus.length = 0;
         this.inputData.length = 0;
+        this.inputData.length = this.apidata.questionCards[this.activeCard].answers.length;
         this.correctInputLetters.length = 0;
         this.errCount.length = 0;
         this.hintStatus.length = 0;
@@ -144,8 +147,7 @@
         this.timerFocusLost.length = this.apidata.questionCards[this.activeCard].answers.length;
 
         for (
-          let i = 0; i < this.apidata.questionCards[this.activeCard].answers.length; i++
-        ) {
+          let i = 0; i < this.apidata.questionCards[this.activeCard].answers.length; i++) {
           this.activeAnswers.push(this.apidata.questionCards[
             this.activeCard
           ].answers[i].toLowerCase());
@@ -158,16 +160,15 @@
         setTimeout(() => this.setFocus(), 0);
       },
       checkInput: function (index) {
-        this.stopInput(index);
-        this.setInputStatus(index, "");
         this.inputData.splice(index, 1, this.inputData[index].toLowerCase());
-        this.indexInputLetters.splice(index, 1, (this.inputData[index].length - 1));
+        this.indexInputLetters[index] = this.inputData[index].length - 1;
         if (
-          this.inputData[index][this.indexInputLetters[index]] !=
-          this.activeAnswers[index][this.indexInputLetters[index]]
-        )
+          this.inputData[index][this.indexInputLetters[index]] !==
+          this.activeAnswers[index][this.indexInputLetters[index]]) {
           this.incorrectInput(index);
-        else this.correctInput(index);
+        } else this.correctInput(index); {
+          this.stopInput(index);
+        }
       },
 
       correctInput: function (index) {
@@ -178,7 +179,7 @@
       },
 
       validCheck: function (index) {
-        if (this.inputData[index] == this.activeAnswers[index]) {
+        if (this.inputData[index] === this.activeAnswers[index]) {
           this.setInputStatus(index, "is-valid");
           this.hintStatus.splice(index, 1, false);
           this.setFocus();
@@ -189,7 +190,9 @@
         this.setInputStatus(index, "is-invalid");
         this.inputData.splice(index, 1, this.correctInputLetters[index]);
         this.errCount.splice(index, 1, (this.errCount[index] + 1));
-        if (this.errCount[index] == 3) this.hintStatus.splice(index, 1, true);
+        if (this.errCount[index] === 3) {
+          this.hintStatus.splice(index, 1, true);
+        }
       },
 
       setInputStatus: function (index, status) {
@@ -199,7 +202,7 @@
       stopInput: function (index) {
         clearTimeout(this.timerStopInput[index]);
         this.timerStopInput.splice(index, 1, setTimeout(() => {
-          if (this.inputStatus[index] != "is-valid") {
+          if (this.inputStatus[index] !== "is-valid") {
             this.setInputStatus(index, "is-invalid");
           }
         }, this.delayStopInput));
@@ -213,8 +216,9 @@
 
       lostFocus: function (index) {
         this.timerFocusLost.splice(index, 1, setTimeout(() => {
-          if (this.inputStatus[index] != "is-valid")
+          if (this.inputStatus[index] !== "is-valid") {
             this.setInputStatus(index, "is-invalid");
+          }
         }, this.delayFocusLost));
       },
 
@@ -223,18 +227,20 @@
         this.inputData.splice(index, 1, (this.inputData[index] +
           this.activeAnswers[index][this.indexInputLetters[index]]));
         this.correctInputLetters.splice(index, 1, this.inputData[index]);
-        this.indexInputLetters.splice(index, 1, (this.indexInputLetters[index] + 1));
+        this.indexInputLetters[index] = this.indexInputLetters[index] + 1;
+        this.errCount.splice(index, 1, 0);
+        this.hintStatus.splice(index, 1, false);
         this.validCheck(index);
       },
 
       setFocus: function (item) {
-        const id = this.inputStatus.findIndex(elem => elem != "is-valid");
+        const id = this.inputStatus.findIndex(elem => elem !== "is-valid");
 
-        if (id != -1 && this.inputStatus[item] != "is-valid" && item != null) {
+        if (id !== -1 && this.inputStatus[item] !== "is-valid" && item != null) {
           const input = document.getElementById(item);
           input.focus();
         }
-        if (id != -1 && item == null) {
+        if (id !== -1 && item == null) {
           const input = document.getElementById(id);
           input.focus();
         }
